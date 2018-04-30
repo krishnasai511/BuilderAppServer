@@ -13,22 +13,57 @@ console.log("Running");
 
      router.post('/saveRecord', (req,res,next)=>{
          console.log(req.body);
-        
-         var newData = new WebSchema({title:req.body.title,
-            description:req.body.description,
-            bgColor:req.body.bgColor,
-            bgImg:req.body.bgImg,
-            bodyAboutTitle:req.body.bodyAboutTitle,
-           bodyAboutContent:req.body.bodyAboutContent
-        });
+    
+        var newData = new WebSchema(req.body);
+
+
          newData.save(function(err) {
              if(err) throw err;
 
              else console.log('Save Successfully');
              res.status(200).send({'status':1, 'msg':'Success'});
+
          })
 
      });
+
+     router.post('/forgotPassword',(req,res,next)=>{
+     User.findOne({email},function(){
+       
+     })
+     })
+
+    
+
+//   router.put('/update',function(req,res){
+//     var id=req.body.id;
+//     WebSchema.findOne({_id: id},function(err,foundObject){
+
+//   if(err){
+//     console.log(err);
+//     res.status(500).send();
+//   }
+//   else{
+//     if(!foundObject){
+//       res.status(404).send();
+//     }
+//     else{
+//       foundObject.body=req.body;
+//     }
+
+//     foundObject.save(function(err,updatedObject){
+//       if(err){
+//         console.log(err);
+//         res.status(500).send();
+//       }
+//       else{
+//         res.send(updatedObject);
+//       }
+//     });
+//   }
+// });
+//  });
+
 
      function verifyToken(req, res, next) {
         if(!req.headers.authorization) {
@@ -46,13 +81,17 @@ console.log("Running");
         next()
       }
 
-    router.get('/events', (req,res) => {
-
+    router.get('/checkid', (req,res) => {
+       console.log(req.query.id)
+       WebSchema.find({userhref: req.query.id}).then((data)=>{
+         console.log(data);
+         return res.status(200).send({data:data})
+       })
     })
     
-    router.get('/special', verifyToken, (req, res) => {
+    // router.get('/special', verifyToken, (req, res) => {
       
-    })
+    // })
     
     router.post('/signup', (req, res) => {
       let userData = req.body
@@ -82,7 +121,8 @@ console.log("Running");
           } else {
             let payload = {subject: user._id}
             let token = jwt.sign(payload, 'secretKey')
-            res.status(200).send({token})
+
+            res.status(200).send({user:user,token:token})
           }
         }
       })
